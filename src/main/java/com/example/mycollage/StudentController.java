@@ -1,20 +1,26 @@
-package com.example.mycollage.model;
+package com.example.mycollage.controller;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Entity
-public class Student {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String name;
-    private String branch;
-    private int year;
-    private String remarks;
+import com.example.mycollage.repository.StudentRepository;
 
-    // Getters and Setters
+@Controller
+public class StudentController {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @GetMapping("/")
+    public String index(Model model, @RequestParam(value = "search", required = false) String search) {
+        if (search != null) {
+            model.addAttribute("students", studentRepository.findByNameContainingIgnoreCase(search));
+        } else {
+            model.addAttribute("students", studentRepository.findAll());
+        }
+        return "index";
+    }
 }
